@@ -28,7 +28,9 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import java.util.Map;
+import java.util.Optional;
 @Slf4j
 @Service
 public class DynamoDbService {
@@ -117,5 +119,23 @@ public class DynamoDbService {
             createTable(sqsTableInDynamoDb);
         }
         createObject(sqsTableInDynamoDb, key, message);
+    }
+
+    public List<String> getAllContents(String table) {
+        return getDynamoDbClient()
+                .scanPaginator(ScanRequest.builder().tableName(table).build())
+                .items()
+                .stream()
+                .map(item -> item.getOrDefault("content", AttributeValue.builder().s("{}").build()).s())
+                .toList();
+    }
+
+    public Optional<String> getSingleItem(String table, String key) {
+        var response = getDynamoDbClient().getItem(GetItemRequest.builder()
+                .tableName(table)
+                .key(Map.of("key", AttributeValue.builder().s(key).build()))
+                .build());
+        if (!response.hasItem() || response.item().isEmpty()) return Optional.empty();
+        return Optional.ofNullable(response.item().get("content").s());
     }
 }

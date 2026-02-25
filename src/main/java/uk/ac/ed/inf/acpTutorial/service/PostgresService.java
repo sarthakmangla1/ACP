@@ -18,7 +18,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-
+import java.util.Map;
 @Slf4j
 @Service
 public class PostgresService {
@@ -79,5 +79,22 @@ public class PostgresService {
     @Transactional
     public void deleteDrone(String droneId) {
         droneRepository.deleteById(droneId);
+    }
+
+    public List<Map<String, Object>> getAllRowsFromTable(String table) {
+        return jdbcTemplate.queryForList("SELECT * FROM " + table);
+    }
+    public void insertDroneRow(String table, String name, String id,
+                               boolean cooling, boolean heating,
+                               double capacity, int maxMoves,
+                               double costPerMove, double costInitial,
+                               double costFinal, double costPer100Moves) {
+        jdbcTemplate.update(
+                "INSERT INTO " + table +
+                        " (name, id, cooling, heating, capacity, maxMoves, costPerMove, costInitial, costFinal, costPer100Moves) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                name, id, cooling, heating, capacity, maxMoves,
+                costPerMove, costInitial, costFinal, costPer100Moves
+        );
     }
 }

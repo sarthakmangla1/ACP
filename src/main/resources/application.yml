@@ -64,7 +64,7 @@ acp:
   s3-endpoint: http://s3.localhost.localstack.cloud:4566
   s3-bucket: acp
   dynamodb-endpoint: http://dynamodb.localhost.localstack.cloud:4566
-  postgres-endpoint: jdbc:postgresql://localhost:5432/postgres
+  postgres-endpoint: jdbc:postgresql://localhost:5433/postgres
 
   sqs-queue-name: acp-tutorial-queue
   sqs-table-in-dynamodb: acp-sqs-table
